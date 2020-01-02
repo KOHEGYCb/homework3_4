@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import ru.mail.dimaushenko.constants.ErrorConstants;
 import ru.mail.dimaushenko.constants.PropertyConstants;
 import ru.mail.dimaushenko.repository.connectionPool.ConnectionPool;
+import ru.mail.dimaushenko.repository.dao.CarModelDAO;
 import ru.mail.dimaushenko.repository.model.CarModelEnum;
 
 public class PrepareDataBase {
@@ -25,8 +26,7 @@ public class PrepareDataBase {
     private static final String SQL_REQUEST_SHOW_TABLES = "SHOW TABLES;";
     private static final String SQL_REQUEST_CREATE_DB = "CREATE DATABASE " + DATABASE_NAME + ";";
     private static final String SQL_REQUEST_CREATE_TABLE_CAR = "CREATE TABLE car(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR (50) NULL, id_car_model INT NULL, engine_capacity INT NULL);";
-    private static final String SQL_REQUEST_CREATE_TABLE_CAR_MODEL = "CREATE TABLE car_model(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, model VARCHAR (50) NULL);";
-    private static final String SQL_REQUEST_INSERT_CAR_MODEL = "INSERT INTO car_model (model) VALUES (?)";
+    private static final String SQL_REQUEST_CREATE_TABLE_CAR_MODEL = "CREATE TABLE car_model(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR (50) NULL);";
 
     private static final String SQL_COLUMN_DATABASE = "Database";
     private static final String SQL_COLUMN_DATABASE_TABLES = "Tables_in_" + DATABASE_NAME;
@@ -103,17 +103,8 @@ public class PrepareDataBase {
                 LOGGER.error(ex.getMessage(), ex);
                 throw new IllegalArgumentException(ErrorConstants.ERR_NOT_CONMECTION_TO_DB);
             }
-        }
-
-        for (CarModelEnum value : CarModelEnum.values()) {
-            try (Connection connection = ConnectionPool.getINSTANCE().getConnection();
-                    PreparedStatement statement = connection.prepareStatement(SQL_REQUEST_INSERT_CAR_MODEL);) {
-                statement.setString(1, value.name());
-                statement.execute();
-
-            } catch (SQLException ex) {
-                LOGGER.error(ex.getMessage(), ex);
-                throw new IllegalArgumentException(ErrorConstants.ERR_NOT_CONMECTION_TO_DB);
+            for (CarModelEnum value : CarModelEnum.values()) {
+                CarModelDAO.getINSTANCE().addEntity(value);
             }
         }
 
