@@ -18,15 +18,11 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public void addEntities(List<Car> cars) {
-        try (
-                Connection connection = ConnectionPool.getINSTANCE().getConnection();) {
-            connection.setAutoCommit(false);
-            for (Car car : cars) {
-                CarDAO.getINSTANCE().addEntity(car);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(CarServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        CarDAO.getINSTANCE().addEntities(cars);
+    }
+
+    public List<Car> getEntitiesByEngineCapacity(int engineCapacity) {
+        return CarDAO.getINSTANCE().getEntitiesByEngineCapacity(engineCapacity);
     }
 
 }

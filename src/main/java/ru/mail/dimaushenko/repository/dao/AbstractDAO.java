@@ -10,5 +10,7 @@ public interface AbstractDAO<T> {
     
     public T getEntityById(int id);
 
-    public void addEntity(T t) throws SQLException;
+    public void addEntity(T t);
+    
+    public void addEntities(List<T> t);
 }

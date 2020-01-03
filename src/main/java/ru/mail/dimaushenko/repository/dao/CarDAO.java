@@ -29,29 +29,68 @@ public class CarDAO implements AbstractDAO<Car> {
     public List<Car> getAll() {
         List<Car> cars = new ArrayList();
 
-        try (
-                Connection connection = ConnectionPool.getINSTANCE().getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.GET_ALL_CARS);
-                ResultSet resultSet = statement.executeQuery();) {
-            while (resultSet.next()) {
-                cars.add(getCar(resultSet));
+        try (Connection connection = ConnectionPool.getINSTANCE().getConnection();) {
+            try (
+                    PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.GET_ALL_CARS);
+                    ResultSet resultSet = statement.executeQuery();) {
+                while (resultSet.next()) {
+                    cars.add(getCar(resultSet));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
+                connection.rollback();
             }
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return cars;
     }
 
     @Override
-    public void addEntity(Car t) {
-        try (Connection connection = ConnectionPool.getINSTANCE().getConnection();) {
-            try (PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.INSERT_CAR);) {
-                statement.setString(1, t.getName());
+    public Car getEntityById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-//            CarModelDAO.getINSTANCE().
-                statement.setInt(3, t.getEngineCapacity());
+    public List<Car> getEntitiesByEngineCapacity(int engineCapacity) {
+        List<Car> cars = new ArrayList();
+
+        try (Connection connection = ConnectionPool.getINSTANCE().getConnection();) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.GET_CARS_BY_ENGINE_CAPACITY);) {
+                statement.setInt(1, engineCapacity);
+                try (ResultSet resultSet = statement.executeQuery();) {
+                    while (resultSet.next()) {
+                        cars.add(getCar(resultSet));
+                    }
+                }
+                connection.commit();
             } catch (SQLException ex) {
                 Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
+                connection.rollback();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return cars;
+    }
+
+    @Override
+    public void addEntity(Car car) {
+        try (Connection connection = ConnectionPool.getINSTANCE().getConnection();) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.INSERT_CAR);) {
+                statement.setString(1, car.getName());
+                int carModelId = CarModelDAO.getINSTANCE().getEntityIdByName(car.getCarModel());
+                statement.setInt(2, carModelId);
+                statement.setInt(3, car.getEngineCapacity());
+                statement.execute();
+
+                connection.commit();
+            } catch (SQLException ex) {
+                Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
+                connection.rollback();
             }
         } catch (SQLException ex) {
             Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -59,8 +98,25 @@ public class CarDAO implements AbstractDAO<Car> {
     }
 
     @Override
-    public Car getEntityById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addEntities(List<Car> cars) {
+        try (Connection connection = ConnectionPool.getINSTANCE().getConnection();) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.INSERT_CAR);) {
+                for (Car car : cars) {
+                    statement.setString(1, car.getName());
+                    int carModelId = CarModelDAO.getINSTANCE().getEntityIdByName(car.getCarModel());
+                    statement.setInt(2, carModelId);
+                    statement.setInt(3, car.getEngineCapacity());
+                    statement.execute();
+                }
+                connection.commit();
+            } catch (SQLException ex) {
+                Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
+                connection.rollback();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CarDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private Car getCar(ResultSet resultSet) throws SQLException {

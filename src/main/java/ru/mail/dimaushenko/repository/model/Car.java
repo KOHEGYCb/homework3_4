@@ -39,4 +39,8 @@ public class Car {
         this.engineCapacity = engineCapacity;
     }
 
+    @Override
+    public String toString() {
+        return name + " : " + carModel + " : " + engineCapacity;
+    }
 }

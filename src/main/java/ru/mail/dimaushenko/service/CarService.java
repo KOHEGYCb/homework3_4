@@ -9,4 +9,6 @@ public interface CarService {
     
     public void addEntities(List <Car> cars);
     
+    public List<Car> getEntitiesByEngineCapacity(int engineCapacity);
+    
 }
