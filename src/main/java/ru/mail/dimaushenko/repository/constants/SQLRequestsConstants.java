@@ -7,6 +7,7 @@ public class SQLRequestsConstants {
     public static final String GET_COUNT_CARS_BY_ENGINE_CAPACITY = "SELECT COUNT(id) as count FROM car WHERE engine_capacity = ?;";
     public static final String GET_CARS_BY_MIN_ENGINE_CAPACITY = "SELECT * FROM car WHERE engine_capacity = (SELECT MIN(engine_capacity) FROM car);";
 
+    public static final String GET_ALL_CAR_MODELS = "SELECT * FROM car_model;";
     public static final String GET_CAR_MODEL_BY_ID = "SELECT * FROM car_model WHERE id = ?;";
     public static final String GET_CAR_MODEL_BY_NAME = "SELECT * FROM car_model WHERE name = ?;";
 

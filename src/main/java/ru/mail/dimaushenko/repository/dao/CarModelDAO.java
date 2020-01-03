@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import ru.mail.dimaushenko.repository.constants.SQLColumnsConstants;
 import ru.mail.dimaushenko.repository.constants.SQLRequestsConstants;
@@ -22,21 +23,30 @@ public class CarModelDAO implements AbstractDAO<CarModelEnum> {
 
     @Override
     public List<CarModelEnum> getAll(Connection connection) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<CarModelEnum> carModels = new ArrayList();
+        try (PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.GET_ALL_CAR_MODELS);) {
+            try (ResultSet result = statement.executeQuery();) {
+                while (result.next()) {
+                    carModels.add(CarModelEnum.valueOf(result.getString(SQLColumnsConstants.CAR_MODEL_NAME)));
+                }
+            }
+        }
+        return carModels;
     }
 
     @Override
     public CarModelEnum getEntityById(Connection connection, int id) throws SQLException {
+        CarModelEnum carModelEnum = null;
         try (PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.GET_CAR_MODEL_BY_ID);) {
             statement.setInt(1, id);
             try (ResultSet result = statement.executeQuery();) {
                 if (result.next()) {
-                    return CarModelEnum.valueOf(result.getString(SQLColumnsConstants.CAR_MODEL_NAME));
+                    carModelEnum = CarModelEnum.valueOf(result.getString(SQLColumnsConstants.CAR_MODEL_NAME));
                 }
             }
             connection.commit();
         }
-        return null;
+        return carModelEnum;
     }
 
     public int getEntityIdByName(Connection connection, CarModelEnum model) throws SQLException {

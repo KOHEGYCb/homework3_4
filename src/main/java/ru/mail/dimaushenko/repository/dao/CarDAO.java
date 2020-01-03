@@ -36,8 +36,16 @@ public class CarDAO implements AbstractDAO<Car> {
     }
 
     @Override
-    public Car getEntityById(Connection connection, int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Car getEntityById(Connection connection, int id) throws SQLException {
+        Car car = null;
+        try (PreparedStatement statement = connection.prepareStatement(SQLRequestsConstants.GET_ALL_CARS);) {
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    car = getCar(connection, resultSet);
+                }
+            }
+        }
+        return car;
     }
 
     public List<Car> getEntitiesByEngineCapacity(Connection connection, int engineCapacity) throws SQLException {
