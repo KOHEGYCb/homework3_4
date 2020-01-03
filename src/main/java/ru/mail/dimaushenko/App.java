@@ -1,8 +1,15 @@
 package ru.mail.dimaushenko;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
+import java.util.logging.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.mail.dimaushenko.repository.model.Car;
 import ru.mail.dimaushenko.repository.model.CarModelEnum;
 import ru.mail.dimaushenko.service.CarService;
@@ -12,58 +19,92 @@ import ru.mail.dimaushenko.utils.RandomUtil;
 
 public class App {
 
-    public static void main(String[] args) {
-        PrepareDataBase.prepareDB();
+    private static final Logger LOGGER = LogManager.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final CarService CAR_SERVICE = new CarServiceImpl();
+
+    private static final String FILE_NAME = "sql";
+    private static final int AMOUNT_CARS = 10;
+    private static final int MIN_ENGINE_CAPACITY = 1;
+    private static final int MAX_ENGINE_CAPACITY = 10;
+    private static final String NEW_NAME = "Good capacity";
+
+    public static void main(String[] args) {
+
+        runFirstTask();
+
+        runSecondTask();
+
+    }
+
+    private static void runFirstTask() {
+        File file = new File(FILE_NAME);
+        try (Scanner scanner = new Scanner(file);) {
+            while (scanner.hasNext()) {
+                String msg = scanner.nextLine();
+                LOGGER.info(msg);
+            }
+        } catch (FileNotFoundException ex) {
+            java.util.logging.Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static void runSecondTask() {
+        PrepareDataBase.prepareDB();
         runA();
         runB();
-//        runC();
-//        runD();
-//        runE();
+        runC();
+        runD();
+        runE();
     }
 
     private static void runA() {
-
-        int amount = 10;
-        int minEngineCapacity = 1;
-        int maxEngineCapacity = 10;
+        LOGGER.info("Start 2.a");
 
         List<Car> cars = new ArrayList();
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < AMOUNT_CARS; i++) {
             Car car = new Car();
             car.setName("Car " + i);
-            car.setEngineCapacity(RandomUtil.getInt(minEngineCapacity, maxEngineCapacity));
+            car.setEngineCapacity(RandomUtil.getInt(MIN_ENGINE_CAPACITY, MAX_ENGINE_CAPACITY));
             car.setCarModel(getRandCarModel());
             cars.add(car);
         }
 
-        CarService carService = new CarServiceImpl();
-        carService.addEntities(cars);
+        CAR_SERVICE.addEntities(cars);
     }
 
     private static void runB() {
-        int minEngineCapacity = 1;
-        int maxEngineCapacity = 10;
-        
-        int EngineCapacity = RandomUtil.getInt(minEngineCapacity, maxEngineCapacity);
-        
-        CarService carService = new CarServiceImpl();
-        List <Car> cars = carService.getEntitiesByEngineCapacity(EngineCapacity);
-        for (Car car : cars) {
-            System.out.println(car);
-        }
+        LOGGER.info("Start 2.b");
+
+        int engineCapacity = RandomUtil.getInt(MIN_ENGINE_CAPACITY, MAX_ENGINE_CAPACITY);
+        LOGGER.info("Select by EngineCapacity: " + engineCapacity);
+
+        CAR_SERVICE.getEntitiesByEngineCapacity(engineCapacity);
+
     }
 
     private static void runC() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("Start 2.c");
+        CAR_SERVICE.removeEntitiesWithMinEngineCapacity();
     }
 
     private static void runD() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("Start 2.d");
+
+        int engineCapacity = RandomUtil.getInt(MIN_ENGINE_CAPACITY, MAX_ENGINE_CAPACITY);
+        LOGGER.info("Count by EngineCapacity: " + engineCapacity);
+
+        CAR_SERVICE.getCountCarsByEngineCapacity(engineCapacity);
+
     }
 
     private static void runE() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LOGGER.info("Start 2.e");
+
+        int engineCapacity = RandomUtil.getInt(MIN_ENGINE_CAPACITY, MAX_ENGINE_CAPACITY);
+        LOGGER.info("Change name where EngineCapacity: " + engineCapacity);
+
+        CAR_SERVICE.updateCarNameByEngineCapacity(engineCapacity, NEW_NAME);
     }
 
     private static CarModelEnum getRandCarModel() {

@@ -95,16 +95,16 @@ public class PrepareDataBase {
             }
         }
         if (!isFoundTableCarModel) {
-            try (
-                    Connection connection = ConnectionPool.getINSTANCE().getConnection();
-                    PreparedStatement statement = connection.prepareStatement(SQL_REQUEST_CREATE_TABLE_CAR_MODEL);) {
-                statement.execute();
+            try (Connection connection = ConnectionPool.getINSTANCE().getConnection();) {
+                try (PreparedStatement statement = connection.prepareStatement(SQL_REQUEST_CREATE_TABLE_CAR_MODEL);) {
+                    statement.execute();
+                }
+                for (CarModelEnum value : CarModelEnum.values()) {
+                    CarModelDAO.getINSTANCE().addEntity(connection, value);
+                }
             } catch (SQLException ex) {
                 LOGGER.error(ex.getMessage(), ex);
                 throw new IllegalArgumentException(ErrorConstants.ERR_NOT_CONMECTION_TO_DB);
-            }
-            for (CarModelEnum value : CarModelEnum.values()) {
-                CarModelDAO.getINSTANCE().addEntity(value);
             }
         }
 

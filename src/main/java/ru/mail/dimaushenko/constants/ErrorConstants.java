@@ -4,4 +4,5 @@ public class ErrorConstants {
 
     public static final String ERR_NOT_CONMECTION_TO_DB = "Can not to connect to database";
     public static final String ERR_PROP_FILE_IS_NOT_FOUND = "Config property file is not found";
+
 }

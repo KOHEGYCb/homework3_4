@@ -23,18 +23,13 @@ public class ConnectionPool {
         return INSTANCE;
     }
 
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
         String url = PropertyUtil.getINSTANCE().getProperty(PropertyConstants.CONFIG_FILE_MYSQL, PropertyConstants.MYSQL_PROP_URL);
         String user = PropertyUtil.getINSTANCE().getProperty(PropertyConstants.CONFIG_FILE_MYSQL, PropertyConstants.MYSQL_PROP_USERNAME);
         String password = PropertyUtil.getINSTANCE().getProperty(PropertyConstants.CONFIG_FILE_MYSQL, PropertyConstants.MYSQL_PROP_PASSWORD);
-        try {
-            return DriverManager.getConnection(url, user, password);
-        } catch (SQLException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new IllegalArgumentException(ErrorConstants.ERR_NOT_CONMECTION_TO_DB);
-        }
+        return DriverManager.getConnection(url, user, password);
     }
-    
+
     public Connection getConnection(String url, String user, String password) {
         try {
             return DriverManager.getConnection(url, user, password);

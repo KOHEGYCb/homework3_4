@@ -6,11 +6,10 @@ import java.util.List;
 
 public interface AbstractDAO<T> {
 
-    public List<T> getAll();
-    
-    public T getEntityById(int id);
+    public List<T> getAll(Connection connection) throws SQLException;
 
-    public void addEntity(T t);
-    
-    public void addEntities(List<T> t);
+    public T getEntityById(Connection connection, int id) throws SQLException;
+
+    public void addEntity(Connection connection, T t) throws SQLException;
+
 }
