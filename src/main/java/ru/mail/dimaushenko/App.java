@@ -1,13 +1,19 @@
 package ru.mail.dimaushenko;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+import ru.mail.dimaushenko.service.FirstTask;
+import ru.mail.dimaushenko.service.SecondTask;
+import ru.mail.dimaushenko.service.TaskService;
+
+public class App {
+
+    public static void main(String[] args) {
+
+        TaskService first = new FirstTask();
+        first.run();
+
+        TaskService second = new SecondTask();
+        second.run();
+
     }
+
 }
